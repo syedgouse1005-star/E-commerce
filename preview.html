@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>ShopEase - E-Commerce Catalog</title>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  background:#f4f4f4;
+  color:#222;
+}
+
+/* HEADER */
+
+header{
+  background:#111827;
+  color:white;
+  padding:15px 30px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+header h1{
+  font-size:28px;
+}
+
+nav button{
+  padding:10px 16px;
+  margin:5px;
+
+  border:none;
+  border-radius:6px;
+
+  cursor:pointer;
+  background:white;
+  font-weight:bold;
+
+  transition:0.3s;
+}
+
+nav button:hover{
+  transform:scale(1.05);
+}
+
+/* PAGES */
+
+.page{
+  display:none;
+}
+
+.active{
+  display:block;
+}
+
+/* HERO */
+
+.hero{
+  min-height:80vh;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+  padding:20px;
+}
+
+.hero h2{
+  font-size:50px;
+  margin-bottom:20px;
+}
+
+.hero p{
+  font-size:20px;
+  margin-bottom:25px;
+}
+
+.hero button{
+  padding:14px 24px;
+  border:none;
+  background:#111827;
+  color:white;
+  font-size:16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* SEARCH */
+
+.search-box{
+  text-align:center;
+  margin:25px;
+}
+
+.search-box input{
+  width:350px;
+  max-width:90%;
+
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+/* PRODUCTS */
+
+.products-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:20px;
+
+  padding:20px;
+}
+
+.card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+}
+
+.card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+}
+
+.card-content{
+  padding:15px;
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+.card p{
+  margin-bottom:15px;
+}
+
+.card button{
+  width:100%;
+  padding:12px;
+
+  border:none;
+  background:#111827;
+  color:white;
+
+  cursor:pointer;
+  border-radius:6px;
+}
+
+/* CART */
+
+#cart-page{
+  padding:20px;
+}
+
+.cart-item{
+  background:white;
+  padding:15px;
+  margin-bottom:15px;
+
+  border-radius:8px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.cart-item button{
+  padding:8px 12px;
+  border:none;
+  background:red;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+#total-price{
+  margin-top:20px;
+  font-size:24px;
+}
+
+/* FOOTER */
+
+footer{
+  text-align:center;
+  padding:25px;
+  background:#111827;
+  color:white;
+  margin-top:50px;
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+  header{
+    flex-direction:column;
+  }
+
+  .hero h2{
+    font-size:35px;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header>
+
+  <h1>ShopEase</h1>
+
+  <nav>
+    <button onclick="showPage('home')">Home</button>
+
+    <button onclick="showPage('products')">
+      Products
+    </button>
+
+    <button onclick="showPage('cart')">
+      Cart (<span id="cart-count">0</span>)
+    </button>
+  </nav>
+
+</header>
+
+<!-- HOME PAGE -->
+
+<section id="home-page" class="page active">
+
+  <div class="hero">
+
+    <h2>Modern E-Commerce Catalog</h2>
+
+    <p>
+      Full-Stack Style Internship Capstone Project
+    </p>
+
+    <button onclick="showPage('products')">
+      Explore Products
+    </button>
+
+  </div>
+
+</section>
+
+<!-- PRODUCTS PAGE -->
+
+<section id="products-page" class="page">
+
+  <div class="search-box">
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Search products..."
+    >
+
+  </div>
+
+  <div id="products-container" class="products-grid"></div>
+
+</section>
+
+<!-- CART PAGE -->
+
+<section id="cart-page" class="page">
+
+  <h2>Your Cart</h2>
+
+  <br>
+
+  <div id="cart-items"></div>
+
+  <h3 id="total-price">Total: ₹0</h3>
+
+</section>
+
+<!-- FOOTER -->
+
+<footer>
+  Built for Internship Capstone Project 🚀
+</footer>
+
+<script>
+
+/* PRODUCTS DATA */
+
+const products = [
+
+{
+  id:1,
+  name:"Wireless Headphones",
+  price:2999,
+  image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e"
+},
+
+{
+  id:2,
+  name:"Smart Watch",
+  price:4999,
+  image:"https://images.unsplash.com/photo-1523275335684-37898b6baf30"
+},
+
+{
+  id:3,
+  name:"Gaming Mouse",
+  price:1499,
+  image:"https://images.unsplash.com/photo-1527814050087-3793815479db"
+},
+
+{
+  id:4,
+  name:"Laptop",
+  price:55999,
+  image:"https://images.unsplash.com/photo-1496181133206-80ce9b88a853"
+},
+
+{
+  id:5,
+  name:"Bluetooth Speaker",
+  price:2499,
+  image:"https://images.unsplash.com/photo-1589003077984-894e133dabab"
+},
+
+{
+  id:6,
+  name:"DSLR Camera",
+  price:45999,
+  image:"https://images.unsplash.com/photo-1516035069371-29a1b244cc32"
+}
+
+];
+
+/* ELEMENTS */
+
+const productsContainer =
+document.getElementById("products-container");
+
+const cartItems =
+document.getElementById("cart-items");
+
+const cartCount =
+document.getElementById("cart-count");
+
+const totalPrice =
+document.getElementById("total-price");
+
+const searchInput =
+document.getElementById("searchInput");
+
+/* CART STORAGE */
+
+let cart =
+JSON.parse(localStorage.getItem("cart")) || [];
+
+/* SHOW PRODUCTS */
+
+function renderProducts(items){
+
+  productsContainer.innerHTML = "";
+
+  items.forEach(product => {
+
+    productsContainer.innerHTML += `
+
+      <div class="card">
+
+        <img src="${product.image}" alt="${product.name}">
+
+        <div class="card-content">
+
+          <h3>${product.name}</h3>
+
+          <p>₹${product.price}</p>
+
+          <button onclick="addToCart(${product.id})">
+            Add to Cart
+          </button>
+
+        </div>
+
+      </div>
+
+    `;
+  });
+}
+
+/* ADD TO CART */
+
+function addToCart(id){
+
+  const product =
+  products.find(p => p.id === id);
+
+  cart.push(product);
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  updateCart();
+}
+
+/* REMOVE ITEM */
+
+function removeItem(index){
+
+  cart.splice(index,1);
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+  updateCart();
+}
+
+/* UPDATE CART */
+
+function updateCart(){
+
+  cartItems.innerHTML = "";
+
+  let total = 0;
+
+  cart.forEach((item,index) => {
+
+    total += item.price;
+
+    cartItems.innerHTML += `
+
+      <div class="cart-item">
+
+        <div>
+          <h4>${item.name}</h4>
+          <p>₹${item.price}</p>
+        </div>
+
+        <button onclick="removeItem(${index})">
+          Remove
+        </button>
+
+      </div>
+
+    `;
+  });
+
+  cartCount.innerText = cart.length;
+
+  totalPrice.innerText =
+  "Total: ₹" + total;
+}
+
+/* PAGE ROUTING */
+
+function showPage(page){
+
+  document
+    .querySelectorAll(".page")
+    .forEach(p => {
+      p.classList.remove("active");
+    });
+
+  document
+    .getElementById(page + "-page")
+    .classList.add("active");
+}
+
+/* SEARCH */
+
+searchInput.addEventListener("input", () => {
+
+  const value =
+  searchInput.value.toLowerCase();
+
+  const filteredProducts =
+  products.filter(product =>
+    product.name
+    .toLowerCase()
+    .includes(value)
+  );
+
+  renderProducts(filteredProducts);
+
+});
+
+/* INITIAL LOAD */
+
+renderProducts(products);
+
+updateCart();
+
+</script>
+
+</body>
+</html>
